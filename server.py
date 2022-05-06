@@ -29,25 +29,19 @@ def handle_client(conn, addr):
 
         # receive size of msg
         msg_len = conn.recv(HEADER).decode(FORMAT)
-        # parse msg_len to int
-        msg_len = int(msg_len)
-
-        # receive msg
-        msg = conn.recv(msg_len).decode(FORMAT)
-
-        # check if msg is "!DISCONNECT", to check if client wants to disconnect
-        if msg == DISCONNECT:
-            # set connected flag = False
-            connected = False
-
-            print(f"[DISCONNECT] {addr} disconnected!")
-            # close connection
-            conn.close()
-
-
-        # display message
-        else:
-            print(f"[SENDER] {addr}\n[MESSAGE] {msg}")
+        
+        # check if msg len is not null
+        if msg_len:
+            # parse msg_len to int
+            msg_len = int(msg_len)
+            msg = conn.recv(msg_len).decode(FORMAT)
+            if msg == DISCONNECT:
+                connected = False
+                print(f"[DISCONNECT] {addr} is now disconnected!")
+                conn.close()
+            else:
+                print(f"[!] Client: {addr} Message: {msg}")
+            
 
 
 def start():
@@ -72,6 +66,6 @@ def start():
 
         # print active connections to server
         # active connections = total number of theads - 1, server.listen() will run on one thread
-        print(f"[ACTIVE CONNECTIONS] {threading.activeCount( - 1)}")
+        print(f"[ACTIVE CONNECTIONS] {threading.activeCount()-1}")
 
 start()
