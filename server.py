@@ -1,6 +1,5 @@
 import socket
 import threading
-from termcolor import colored
 
 # CONSTANTS
 SERVER = socket.gethostbyname(socket.gethostname())
@@ -16,7 +15,6 @@ server = socket.socket(family=socket.AF_INET, type=socket.SOCK_STREAM)
 
 # bind server to IP ADDRESS and PORT
 server.bind(ADDR)
-
 
 # FUNCTIONS
 
@@ -40,7 +38,7 @@ def handle_client(conn, addr):
                 print(f"[DISCONNECT] {addr} is now disconnected!")
                 conn.close()
             else:
-                print(f"[!] Client: {addr} Message: {msg}")
+                print(f"[NEW MESSAGE] {addr}: {msg}")
             
 
 

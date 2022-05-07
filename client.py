@@ -1,6 +1,4 @@
 import socket
-from sqlite3 import connect
-import termcolor
 
 # CONSTANTS
 SERVER = "192.168.1.78"
@@ -27,7 +25,7 @@ def send(msg):
     client.send(message)
 
 def get_input():
-    message = input("Enter Message (q to quit): ")
+    message = input("[INPUT] Enter Message (q to quit): ")
     if message == 'q':
         send(DISCONNECT)
         print("[DISCONNECT] Disconnected!")
@@ -38,4 +36,3 @@ def get_input():
 
 while connected:
     connected = get_input()
-    print(connected)
