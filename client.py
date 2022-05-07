@@ -1,4 +1,5 @@
 import socket
+from sqlite3 import connect
 import termcolor
 
 # CONSTANTS
@@ -13,6 +14,8 @@ ADDR = (SERVER, PORT)
 client = socket.socket(family=socket.AF_INET, type=socket.SOCK_STREAM)
 client.connect(ADDR)
 
+connected = True
+
 def send(msg):
     message = msg.encode(FORMAT)
 
@@ -23,4 +26,16 @@ def send(msg):
     client.send(send_msg_len)
     client.send(message)
 
-send("test")
+def get_input():
+    message = input("Enter Message (q to quit): ")
+    if message == 'q':
+        send(DISCONNECT)
+        print("[DISCONNECT] Disconnected!")
+        return False
+    else:
+        send(message)
+    return True
+
+while connected:
+    connected = get_input()
+    print(connected)
