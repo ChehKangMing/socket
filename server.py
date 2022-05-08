@@ -10,7 +10,6 @@ FORMAT = "utf-8"
 HEADER = 64
 DISCONNECT = "!DISCONNECT"
 
-EXISTING_USER_MSG = "[ERROR] Usernama already exist!"
 
 # list of users
 connected_users = {}
@@ -25,9 +24,12 @@ server.bind(ADDR)
 # FUNCTIONS
 
 def handle_client(conn, addr):
+
     username = register_user(conn, addr)
 
-    print(f"[NEW CONNECTION] {addr} is now connected as {username}!")
+
+
+    print(f"[NEW CONNECTION] {addr[0]} is now connected as {username}!")
 
     # while client is still connected
     connected = True
@@ -45,25 +47,29 @@ def handle_client(conn, addr):
                 connected = False
                 print(f"[DISCONNECT] {username} is now disconnected!")
                 del connected_users[username]
-                print(connected_users)
                 conn.close()
             else:
                 print(f"[NEW MESSAGE] {username}: {msg}")
 
 
 def register_user(conn, addr):
-    name_len = conn.recv(HEADER).decode(FORMAT)
-    if name_len:
-        name_len = int(name_len)
-        username = conn.recv(name_len).decode(FORMAT)
 
-        if username in connected_users:
-             conn.send("0".encode(FORMAT))
-        else:
-            conn.send("1".encode(FORMAT))
-            connected_users[username] = addr
-    print(connected_users.keys())
-    return username
+    unregistered = True
+    while unregistered:
+        name_len = conn.recv(HEADER).decode(FORMAT)
+        if name_len:
+            name_len = int(name_len)
+            username = conn.recv(name_len).decode(FORMAT)
+
+            if username in connected_users:
+                conn.send("0".encode(FORMAT))
+                unregistered = True
+            else:
+                conn.send("1".encode(FORMAT))
+                connected_users[username] = addr
+                unregistered = False
+                print(connected_users.keys())
+                return username
             
 
 

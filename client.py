@@ -49,7 +49,7 @@ def register_user():
         print(f"[REGISTERED] Successfully registered as {usrnme}!")
         return False
     elif registered_flag == "0":
-        print(f"[ERROR] {usrnme} already taken!")
+        print(f"[ERROR] {usrnme} is already taken!")
         return True
 
 
