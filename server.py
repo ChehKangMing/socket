@@ -1,5 +1,6 @@
 import socket
 import threading
+from unicodedata import name
 
 # CONSTANTS
 SERVER = socket.gethostbyname(socket.gethostname())
@@ -8,6 +9,11 @@ ADDR = (SERVER, PORT)
 FORMAT = "utf-8"
 HEADER = 64
 DISCONNECT = "!DISCONNECT"
+
+EXISTING_USER_MSG = "[ERROR] Usernama already exist!"
+
+# list of users
+connected_users = {}
 
 
 # create a new socket
@@ -19,7 +25,9 @@ server.bind(ADDR)
 # FUNCTIONS
 
 def handle_client(conn, addr):
-    print(f"[NEW CONNECTION] {addr} is now connected!")
+    username = register_user(conn, addr)
+
+    print(f"[NEW CONNECTION] {addr} is now connected as {username}!")
 
     # while client is still connected
     connected = True
@@ -35,10 +43,27 @@ def handle_client(conn, addr):
             msg = conn.recv(msg_len).decode(FORMAT)
             if msg == DISCONNECT:
                 connected = False
-                print(f"[DISCONNECT] {addr} is now disconnected!")
+                print(f"[DISCONNECT] {username} is now disconnected!")
+                del connected_users[username]
+                print(connected_users)
                 conn.close()
             else:
-                print(f"[NEW MESSAGE] {addr}: {msg}")
+                print(f"[NEW MESSAGE] {username}: {msg}")
+
+
+def register_user(conn, addr):
+    name_len = conn.recv(HEADER).decode(FORMAT)
+    if name_len:
+        name_len = int(name_len)
+        username = conn.recv(name_len).decode(FORMAT)
+
+        if username in connected_users:
+             conn.send("0".encode(FORMAT))
+        else:
+            conn.send("1".encode(FORMAT))
+            connected_users[username] = addr
+    print(connected_users.keys())
+    return username
             
 
 
